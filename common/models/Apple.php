@@ -65,13 +65,11 @@ public function rules()
 public function beforeSave($insert)
 {
     if (parent::beforeSave($insert)) {
-        // Отладочная информация
         if (YII_DEBUG) {
             Yii::info("beforeSave: status = " . var_export($this->status, true) . 
                      ", type = " . gettype($this->status), 'apple');
         }
         
-        // Убедимся, что status - строка
         if ($this->status !== null && !is_string($this->status)) {
             if (YII_DEBUG) {
                 Yii::error("status is not string: " . var_export($this->status, true), 'apple');
@@ -79,17 +77,14 @@ public function beforeSave($insert)
             $this->status = (string)$this->status;
         }
         
-        // Убедимся, что created_at установлено
         if ($insert && empty($this->created_at)) {
             $this->created_at = time();
         }
         
-        // Преобразуем boolean в integer для MySQL
         if (is_bool($this->is_deleted)) {
             $this->is_deleted = $this->is_deleted ? 1 : 0;
         }
         
-        // Устанавливаем значения по умолчанию для nullable полей
         if ($this->fallen_at === '') {
             $this->fallen_at = null;
         }
@@ -151,11 +146,11 @@ public function afterFind()
    public function safeDelete()
    {
     $this->is_deleted = true;
-    return $this->save(false); // Сохраняем без валидации
+    return $this->save(false); 
    }
 
     /**
-     * Получить случайный цвет
+     * Получить случайный цвет нового яблока
      */
     private static function getRandomColor()
     {
@@ -207,22 +202,20 @@ public function afterFind()
     }
 
     /**
- * Съесть часть яблока
- */
-public function eat($percent)
-{
-    // Логируем начало
+    * Съесть часть яблока
+    */
+    public function eat($percent)
+    {
+
     Yii::info("eat() вызван для яблока ID: {$this->id}, процент: {$percent}", 'apple');
-    
-    // Проверка возможности съесть
+
     $this->checkCanEat();
     
-    // Проверка корректности процента
+
     if (!is_numeric($percent) || $percent <= 0 || $percent > 100) {
         throw new \Exception('Процент должен быть числом от 1 до 100');
     }
-    
-    // Перевод процента в долю
+
     $fraction = $percent / 100;
     
     if ($fraction > $this->size) {
@@ -230,17 +223,13 @@ public function eat($percent)
                            $this->getRemainingPercent() . '%, пытаетесь съесть: ' . $percent . '%');
     }
     
-    // Уменьшаем размер яблока
     $oldSize = $this->size;
     $this->size -= $fraction;
-    
-    // Округляем для избежания ошибок с плавающей точкой
     $this->size = round($this->size, 2);
     
     Yii::info("Размер изменен: {$oldSize} -> {$this->size}", 'apple');
-    
-    // Если яблоко полностью съедено
-    if ($this->size <= 0.01) { // Небольшая дельта для погрешности
+
+    if ($this->size <= 0.01) { 
         $this->status = self::STATUS_EATEN;
         $this->is_deleted = true;
         $this->size = 0;
@@ -277,19 +266,23 @@ public function eat($percent)
     
       return true;
      }
- 
-private function checkIfRotten()
-{
-    if ($this->status === self::STATUS_ON_GROUND && $this->fallen_at) {
+
+    /**
+     * Проверка статус яблока на испорченность
+     */
+     private function checkIfRotten()
+     {
+      if ($this->status === self::STATUS_ON_GROUND && $this->fallen_at) {
         $timeOnGround = time() - $this->fallen_at;
         
         if ($timeOnGround >= self::ROTTEN_TIME && $this->status !== self::STATUS_ROTTEN) {
             $this->status = self::STATUS_ROTTEN;
             $this->rotten_at = time();
             $this->save(false);
-        }
-    }
-}
+          }
+       }
+      }
+
     /**
      * Получить статус яблока в читаемом виде
      */
@@ -357,16 +350,16 @@ private function checkIfRotten()
         return sprintf('%02d:%02d', $hours, $minutes);
     }
 
-/**
- * Получить процент оставшегося яблока
- */
-public function getRemainingPercent()
-{
+   /**
+   * Получить процент оставшегося яблока в процентах
+   */
+    public function getRemainingPercent()
+    {
     if ($this->size === null) {
         return 0;
     }
     return round($this->size * 100);
-}
+    }
 
     /**
      * Проверка, можно ли уронить яблоко
