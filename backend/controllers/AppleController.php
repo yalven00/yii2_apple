@@ -26,7 +26,7 @@ class AppleController extends Controller
                 'rules' => [
                     [
                         'allow' => true,
-                        'roles' => ['?'], // Только авторизованные пользователи
+                        'roles' => ['@'], 
                     ],
                 ],
             ],
@@ -58,7 +58,7 @@ class AppleController extends Controller
             ],
         ]);
 
-        // Регистрируем JS для Bootstrap модальных окон
+        //Регистрируем JS для Bootstrap модальных окон
         $this->view->registerJs('
             $(document).ready(function() {
                 $(\'[data-toggle="modal"]\').click(function() {
@@ -78,7 +78,7 @@ class AppleController extends Controller
      */
     public function actionGenerate()
     {
-        $count = rand(1, 10); // Генерируем от 1 до 10 яблок
+        $count = rand(1, 10);
         
         $created = 0;
         for ($i = 0; $i < $count; $i++) {
@@ -139,9 +139,12 @@ class AppleController extends Controller
         return $this->redirect(['index']);
     }
 
+     /**
+     * подсчет процентов съеденного яблока
+     */
+    public function actionEatPercent($id, $percent)
+    {
 
-public function actionEatPercent($id, $percent)
-{
     $apple = Apple::findOne($id);
     
     if (!$apple) {
@@ -157,10 +160,15 @@ public function actionEatPercent($id, $percent)
     }
     
     return $this->redirect(['index']);
-}
 
-public function actionDelete($id)
-{
+    }
+
+    /**
+     * удаление яблока
+    */
+   public function actionDelete($id)
+    {
+
     try {
         $apple = $this->findModel($id);
         
@@ -181,13 +189,14 @@ public function actionDelete($id)
     }
     
     return $this->redirect(['index']);
-}
+    }
 
-
-public function actionDeleteAll()
-{
+    /**
+     * удаление всех яблок
+     */
+   public function actionDeleteAll()
+   {
     try {
-        // Используем 1 вместо true для MySQL
         $count = Apple::updateAll(['is_deleted' => 1]);
         Yii::$app->session->setFlash('success', "Удалено $count яблок(а)");
     } catch (\Exception $e) {
@@ -195,20 +204,19 @@ public function actionDeleteAll()
     }
     
     return $this->redirect(['index']);
-}
+     }
 
-/**
- * Finds the Apple model based on its primary key value.
- * If the model is not found, a 404 HTTP exception will be thrown.
- */
-protected function findModel($id)
-{
-    // Используем 0 вместо false для MySQL
+     /**
+     * Поиск модели Apple, если не найдена то бросает 404
+     */
+   protected function findModel($id)
+   {
+
     if (($model = Apple::findOne(['id' => $id, 'is_deleted' => 0])) !== null) {
         return $model;
     }
 
     throw new \yii\web\NotFoundHttpException('Яблоко не найдено или уже удалено');
-}
+   }
    
 }
