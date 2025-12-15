@@ -19,17 +19,14 @@ use Yii;
  * ```php
  * Yii::$app->session->setFlash('error', ['Error 1', 'Error 2']);
  * ```
- *
- * @author Kartik Visweswaran <kartikv2@gmail.com>
- * @author Alexander Makarov <sam@rmcreative.ru>
  */
-class Alert extends \yii\bootstrap5\Widget
+class Alert extends \yii\bootstrap4\Widget
 {
     /**
      * @var array the alert types configuration for the flash messages.
      * This array is setup as $key => $value, where:
      * - key: the name of the session flash variable
-     * - value: the bootstrap alert type (i.e. danger, success, info, warning)
+     * - value: the bootstrap alert type (i.e., danger, success, info, warning)
      */
     public $alertTypes = [
         'error'   => 'alert-danger',
@@ -38,12 +35,12 @@ class Alert extends \yii\bootstrap5\Widget
         'info'    => 'alert-info',
         'warning' => 'alert-warning'
     ];
+
     /**
      * @var array the options for rendering the close button tag.
-     * Array will be passed to [[\yii\bootstrap\Alert::closeButton]].
+     * Array will be passed to [[\yii\bootstrap4\Alert::closeButton]].
      */
     public $closeButton = [];
-
 
     /**
      * {@inheritdoc}
@@ -60,7 +57,7 @@ class Alert extends \yii\bootstrap5\Widget
             }
 
             foreach ((array) $flash as $i => $message) {
-                echo \yii\bootstrap5\Alert::widget([
+                echo \yii\bootstrap4\Alert::widget([
                     'body' => $message,
                     'closeButton' => $this->closeButton,
                     'options' => array_merge($this->options, [

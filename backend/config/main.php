@@ -15,6 +15,7 @@ return [
     'components' => [
         'request' => [
             'csrfParam' => '_csrf-backend',
+            'cookieValidationKey' => 'LbDe9iaUpv335QxRb3KqpCc_g0RREoeN', 
         ],
         'user' => [
             'identityClass' => 'common\models\User',
@@ -22,14 +23,13 @@ return [
             'identityCookie' => ['name' => '_identity-backend', 'httpOnly' => true],
         ],
         'session' => [
-            // this is the name of the session cookie used for login on the backend
             'name' => 'advanced-backend',
         ],
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
             'targets' => [
                 [
-                    'class' => \yii\log\FileTarget::class,
+                    'class' => 'yii\log\FileTarget',
                     'levels' => ['error', 'warning'],
                 ],
             ],
@@ -37,14 +37,27 @@ return [
         'errorHandler' => [
             'errorAction' => 'site/error',
         ],
-        /*
         'urlManager' => [
             'enablePrettyUrl' => true,
             'showScriptName' => false,
             'rules' => [
+                '' => 'site/index',
+                'apple' => 'apple/index',
+                'apple/<action>' => 'apple/<action>',
+                '<controller:\w+>' => '<controller>/index',
+                '<controller:\w+>/<action:\w+>' => '<controller>/<action>',
             ],
         ],
-        */
     ],
     'params' => $params,
+    'as access' => [
+        'class' => \yii\filters\AccessControl::class,
+        'except' => ['site/login', 'site/error'],
+        'rules' => [
+            [
+                'allow' => true,
+                'roles' => ['@'],
+            ],
+        ],
+    ],
 ];
